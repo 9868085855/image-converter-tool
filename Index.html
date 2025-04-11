@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Format Converter</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+    header, footer { background-color: #333; color: white; padding: 1em; display: flex; justify-content: space-between; align-items: center; }
+    header a, footer a { color: white; margin-left: 1em; text-decoration: none; }
+    .logo { font-weight: bold; font-size: 1.2em; }
+    .container { max-width: 600px; margin: auto; padding: 2em; text-align: center; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .ads { background: #e6e6e6; margin: 1em 0; padding: 1em; border: 1px dashed #ccc; border-radius: 8px; }
+    input, select, button { margin: 1em 0; padding: 0.7em; font-size: 1em; width: 100%; max-width: 300px; }
+    button { background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    html { scroll-behavior: smooth; }
+    section { max-width: 600px; margin: 2em auto; background: white; padding: 2em; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    form { display: flex; flex-direction: column; align-items: flex-start; gap: 1em; }
+    label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">ImageConverter</div>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <div class="ads">Advertisement Space</div>
+
+  <div class="container">
+    <h1>Image Format Converter</h1>
+    <input type="file" id="imageInput" accept="image/*" multiple><br>
+    <label for="formatSelect">Choose Format:</label>
+    <select id="formatSelect">
+      <option value="image/jpeg">JPG</option>
+      <option value="image/png">PNG</option>
+      <option value="image/webp">WEBP</option>
+      <option value="image/heic">HEIC (Simulated)</option>
+      <option value="image/svg+xml">SVG (Simulated)</option>
+    </select><br>
+    <button onclick="convertImage()">Convert Now</button>
+    <div id="downloadLink"></div>
+  </div>
+
+  <div class="ads">Advertisement Space</div>
+
+  <section id="about">
+    <h2>About</h2>
+    <p>This tool allows you to convert your images to different formats like JPG, PNG, WEBP, HEIC, and SVG. It is fast, simple, and completely free to use!</p>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <form onsubmit="submitContact(event)">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+      <label for="message">Message:</label>
+      <textarea id="message" rows="4" required style="width:100%; max-width:500px;"></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+    <p id="contactMsg"></p>
+  </section>
+
+  <footer>
+    <div>&copy; 2025 ImageConverter. All rights reserved.</div>
+  </footer>
+
+  <script>
+    function convertImage() {
+      const fileInput = document.getElementById('imageInput');
+      const format = document.getElementById('formatSelect').value;
+      const downloadLink = document.getElementById('downloadLink');
+      downloadLink.innerHTML = '';
+
+      if (!fileInput.files.length) {
+        alert('Please upload at least one image.');
+        return;
+      }
+
+      Array.from(fileInput.files).forEach(file => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = function(e) {
+          const img = new Image();
+          img.src = e.target.result;
+
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            if (format === 'image/heic' || format === 'image/svg+xml') {
+              alert('HEIC and SVG export not supported in browsers. Simulation only.');
+              return;
+            }
+
+            canvas.toBlob(function(blob) {
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `converted-${file.name.split('.')[0]}.${format.split('/')[1]}`;
+              link.textContent = `Download ${file.name}`;
+              link.style.display = 'block';
+              link.style.marginTop = '10px';
+              downloadLink.appendChild(link);
+            }, format);
+          }
+        }
+      });
+    }
+
+    function submitContact(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+
+      // Simulated contact form
+      document.getElementById('contactMsg').textContent = `Thank you, ${name}. Your message has been sent!`;
+
+      // Reset form
+      event.target.reset();
+    }
+  </script>
+</body>
+</html>
